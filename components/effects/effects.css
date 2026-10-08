@@ -1,0 +1,84 @@
+/*
+ * Visual effects layer. Every rule is scoped under html[data-fx], which is only
+ * set when EFFECTS_ENABLED is true in components/effects/index.tsx.
+ */
+
+/* ---------- Intro loader ---------- */
+.fx-intro {
+  display: none;
+}
+html[data-fx]:not([data-intro-seen]) .fx-intro {
+  display: flex;
+  /* failsafe: never block the page if something goes wrong */
+  animation: fx-intro-failsafe 0s linear 6s forwards;
+}
+@keyframes fx-intro-failsafe {
+  to {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+.fx-intro-mark {
+  animation: fx-mark-glow 1.6s ease-in-out infinite;
+}
+@keyframes fx-mark-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 24px -10px rgba(34, 211, 238, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 44px -6px rgba(34, 211, 238, 0.7);
+  }
+}
+
+/* ---------- Cursor spotlight ---------- */
+.fx-spotlight {
+  position: fixed;
+  left: -280px;
+  top: -280px;
+  z-index: 40;
+  width: 560px;
+  height: 560px;
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.07) 0%,
+    rgba(139, 92, 246, 0.035) 35%,
+    transparent 65%
+  );
+  will-change: transform;
+}
+html:not([data-fx]) .fx-spotlight {
+  display: none;
+}
+
+/* ---------- Hero scroll-out (progressive: only where scroll timelines exist) ---------- */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-fx] #hero > div.mx-auto {
+      animation: fx-hero-out linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 100vh;
+    }
+    html[data-fx] #hero > button {
+      animation: fx-fade-out linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 25vh;
+    }
+  }
+}
+@keyframes fx-hero-out {
+  to {
+    opacity: 0.15;
+    transform: translateY(-8vh) scale(0.96);
+  }
+}
+@keyframes fx-fade-out {
+  to {
+    opacity: 0;
+  }
+}

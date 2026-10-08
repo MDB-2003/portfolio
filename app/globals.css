@@ -1,0 +1,212 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-elevated: var(--elevated);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-cyan: var(--cyan);
+  --color-violet: var(--violet);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+:root {
+  color-scheme: dark;
+
+  --background: #050505;
+  --foreground: #f5f5f5;
+  --surface: #080808;
+  --card: #0d0d0f;
+  --card-foreground: #f5f5f5;
+  --elevated: #111113;
+  --popover: #0d0d0f;
+  --popover-foreground: #f5f5f5;
+
+  --primary: #22d3ee;
+  --primary-foreground: #050505;
+  --secondary: #111113;
+  --secondary-foreground: #f5f5f5;
+
+  --muted: #0d0d0f;
+  --muted-foreground: #a1a1aa;
+  --subtle: #71717a;
+
+  --accent: #8b5cf6;
+  --accent-foreground: #f5f5f5;
+
+  --cyan: #22d3ee;
+  --violet: #8b5cf6;
+
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #22d3ee;
+
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--cyan) 30%, transparent);
+    color: var(--foreground);
+  }
+  /* Thin custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1a1a1d;
+    border-radius: 999px;
+    border: 2px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #26262a;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@utility text-glow-cyan {
+  text-shadow: 0 0 24px color-mix(in oklab, var(--cyan) 45%, transparent);
+}
+
+@utility grid-fade {
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* ---------- Certifications "More" button: rotating edge light + shine sweep ---------- */
+@property --cert-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.cert-more-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  animation: cert-breathe 3.2s ease-in-out infinite;
+}
+/* light travelling around the border (the ring is the border) */
+.cert-more-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--cert-angle),
+    rgba(255, 255, 255, 0.1) 0 55%,
+    var(--cyan) 75%,
+    var(--violet) 88%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: cert-spin 3.2s linear infinite;
+  pointer-events: none;
+}
+/* soft shine that sweeps across the face */
+.cert-more-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    color-mix(in oklab, var(--cyan) 28%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: cert-shine 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.cert-more-btn:hover::before {
+  animation-duration: 1.4s;
+}
+@keyframes cert-spin {
+  to {
+    --cert-angle: 360deg;
+  }
+}
+@keyframes cert-shine {
+  0%,
+  55% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+@keyframes cert-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 22px -10px rgba(34, 211, 238, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 34px -8px rgba(34, 211, 238, 0.6);
+  }
+}
